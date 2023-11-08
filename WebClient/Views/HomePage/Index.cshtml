@@ -1,0 +1,56 @@
+﻿@using BussinessObject.Models;
+@{
+	Layout = "_Homelayout";
+	<link rel="stylesheet" type="text/css" href="~/css/Player/PlayerIndex.css">
+	List<Match> matches = ViewData["matches"] as List<Match>;
+}
+<style>
+	.player-avatar {
+		width: 100px;
+		height: 100px;
+	}
+
+	.Wrap {
+		height: 100vh;
+		overflow-y: scroll;
+	}
+
+		.Wrap::-webkit-scrollbar {
+			display: none;
+		}
+</style>
+<div class="Wrap">
+	<div class="container">
+		<iframe width="560" height="315" src="https://www.youtube.com/embed/X8R9cQAdLts?si=3mxF7lhSoVXQKC0p" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+		<table class="custom-table">
+			<thead>
+				<tr>
+					<th>You may missed ?</th>
+					<th></th>
+					<th><a href="/match" style="border-radius:8px; text-decoration: none;display:inline" class="btn btn-primary">More</a></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var match in matches)
+				{
+					<tr>
+						<td>
+							<img src="@match.HomeNavigation.Logo" alt="Avatar" class="player-avatar"><p>@match.HomeNavigation.Name</p>
+							<a href="@Url.Action("Index", "PlayerMatchRegistration", new { clubId = match.Home,matchId = match.MatchId })" style="border-radius:8px; text-decoration: none;display:inline" class="btn btn-primary">Starting Lineup</a>
+						</td>
+						<td>
+							<p>Round : @match.Round</p>
+							<h3>@match.Result</h3>
+						</td>
+						<td>
+							<img src="@match.AwayNavigation.Logo" alt="Avatar" class="player-avatar"><p>@match.AwayNavigation.Name</p>
+							<a href="@Url.Action("Index", "PlayerMatchRegistration", new { clubId = match.Away,matchId = match.MatchId })" style="border-radius:8px; text-decoration: none;display:inline" class="btn btn-primary">Starting Lineup</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+

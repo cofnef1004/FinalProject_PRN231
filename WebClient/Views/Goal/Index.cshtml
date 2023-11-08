@@ -1,0 +1,43 @@
+﻿@{
+	Layout = "_Homelayout";
+	var goalsInMatch = ViewBag.GoalsInMatch as List<BussinessObject.Models.Goal>;
+	<link rel="stylesheet" type="text/css" href="~/css/Player/PlayerIndex.css">
+}
+
+<style>
+	.player-avatar {
+		width: 100px;
+		height: 100px;
+	}
+
+	.Wrap {
+		height: 100vh;
+		overflow-y: scroll;
+	}
+
+		.Wrap::-webkit-scrollbar {
+			display: none;
+		}
+</style>
+
+
+<table class="custom-table">
+	<thead>
+		<tr>
+			<th>Player</th>
+			<th>Goals Scored</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var goal in goalsInMatch)
+		{
+			<tr>
+				<td><img src="@goal.Player.Avatar" alt="Avatar" class="player-avatar">@goal.Player.Name</td>
+				<td>@goal.GoalsInMatch</td>
+			</tr>
+			<form action="@Url.Action("Add", new { id = goal.MatchId })" style="display:inline">
+				<button type="submit" style="border-radius:8px; text-decoration: none">Change</button>
+			</form>
+		}
+	</tbody>
+</table>

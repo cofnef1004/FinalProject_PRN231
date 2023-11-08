@@ -1,0 +1,94 @@
+﻿@model BussinessObject.Models.MatchDetail
+
+@{
+	Layout = "_Homelayout";
+	<link rel="stylesheet" type="text/css" href="~/css/Player/PlayerIndex.css">
+}
+
+<style>
+	.player-avatar {
+		width: 100px;
+		height: 100px;
+	}
+
+	.Wrap {
+		height: 100vh;
+		overflow-y: scroll;
+	}
+
+		.Wrap::-webkit-scrollbar {
+			display: none;
+		}
+</style>
+<link rel="stylesheet" type="text/css" href="~/css/Player/PlayerIndex.css">
+
+<div class="Wrap">
+	<div class="container">
+		@if (Model == null)
+		{
+			<div class="text-center">
+				<img src="https://seeklogo.com/images/P/premier-league-logo-2FCC73BCBD-seeklogo.com.png" style="width:300px;height:300px">
+				<h3>The match has not been recorded yet, please wait a moment</h3>
+			</div>
+		}
+		else
+		{
+			<table class="custom-table">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Home</th>
+						<th>Away</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Possession</td>
+						<td>@Model.HomePossesion%</td>
+						<td>@Model.AwayPossesion%</td>
+					</tr>
+					<tr>
+						<td>Shots</td>
+						<td>@Model.HomeShot</td>
+						<td>@Model.AwayShot</td>
+					</tr>
+					<tr>
+						<td>Shots on Target</td>
+						<td>@Model.HomeShotOnTarget</td>
+						<td>@Model.AwayShotOnTarget</td>
+					</tr>
+					<tr>
+						<td>Corners</td>
+						<td>@Model.HomeConers</td>
+						<td>@Model.AwayConers</td>
+					</tr>
+					<tr>
+						<td>Yellow Cards</td>
+						<td>@Model.HomeYcard</td>
+						<td>@Model.AwayYcard</td>
+					</tr>
+					<tr>
+						<td>Red Cards</td>
+						<td>@Model.HomeRcard</td>
+						<td>@Model.AwayRcard</td>
+					</tr>
+					<tr>
+						<td>Passes</td>
+						<td>@Model.HomePass</td>
+						<td>@Model.AwayPass</td>
+					</tr>
+				</tbody>
+			</table>
+@*			@if (TempData["UserRole"]?.ToString() == "Admin")
+			{
+				<form action="@Url.Action("Edit", new { id = Model.MatchDetailId })" style="display:inline">
+					<button type="submit" style="border-radius:8px; text-decoration: none">Edit</button>
+				</form>
+			}*@
+			<form action="@Url.Action("Edit", new { id = Model.MatchDetailId })" style="display:inline">
+				<button type="submit" style="border-radius:8px; text-decoration: none">Edit</button>
+			</form>
+		}
+	</div>
+</div>
+}

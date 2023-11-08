@@ -1,0 +1,39 @@
+﻿@model BussinessObject.Models.PlayerMatchRegistration
+@{
+	var player = ViewData["Player"] as SelectList;
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="container">
+@if (TempData["SuccessMessage"] != null)
+{
+	<div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@using (Html.BeginForm("Add", "PlayerMatchRegistration", FormMethod.Post))
+{
+	<div hidden class="form-group">
+		@Html.LabelFor(model => model.MatchId)
+		@Html.HiddenFor(model => model.MatchId)
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.PlayerId)
+		@Html.DropDownListFor(model => model.PlayerId, player, "Select Player", new { @class = "form-control" })
+		@Html.ValidationMessageFor(model => model.PlayerId)
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Position)
+		@Html.TextBoxFor(model => model.Position, new { @class = "form-control" })
+	</div>
+
+	<div style="margin-top:10px">
+		<button type="submit" class="btn btn-primary">Save</button>
+		<a href="/match" class="btn btn-secondary">Back</a>
+	</div>
+}
+</div>

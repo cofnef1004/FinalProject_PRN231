@@ -1,0 +1,57 @@
+﻿@{
+	Layout = null;
+}
+
+@model BussinessObject.Models.User
+@{
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+}
+<section class="text-center text-lg-start">
+	<style>
+		.cascading-right {
+			margin-right: -50px;
+		}
+	</style>
+
+	<div style="margin-top:100px" class="container py-4">
+		<div class="row g-0 align-items-center">
+			<div class="col-lg-5 mb-5 mb-lg-0">
+				<div class="card cascading-right" style="
+            background: hsla(0, 0%, 100%, 0.55);
+            backdrop-filter: blur(30px);
+            ">
+					<div style="color:white" class="card-body p-5 text-center">
+						<img src="https://cdn.freebiesupply.com/images/large/2x/premier-league-logo-png-transparent.png" class="w-100 rounded-4 shadow-4"
+							 alt="" />
+						@using (Html.BeginForm("Index", "Login", FormMethod.Post))
+						{
+							<div class="form-outline mb-4">
+								<label for="Username">Username:</label>
+								<input type="text" name="Username" id="Username" />
+							</div>
+							<div class="form-outline mb-4">
+								<label for="Password">Password:</label>
+								<input type="password" name="Password" id="Password" />
+							</div>
+							<div>
+								<input type="submit" value="Login" />
+							</div>
+							@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+							{
+								<div style="color:red" class="error-message">
+									@ViewBag.ErrorMessage
+								</div>
+							}
+						}
+					</div>
+				</div>
+			</div>
+
+			<div style="border-radius:10px" class="col-lg-7 mb-5 mb-lg-0">
+				<img style="border-radius:10px" src="https://www.taegukwarriors.com/wp-content/uploads/2020/08/FPL-Statement-Lead.jpg" class="w-100 rounded-4 shadow-4"
+					 alt="" />
+			</div>
+		</div>
+	</div>
+</section>
+

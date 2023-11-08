@@ -1,0 +1,118 @@
+﻿@model BussinessObject.Models.MatchDetail
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="alert alert-danger">@ViewBag.Message</div>
+}
+
+<form method="post" action="/MatchDetail/Add">
+    <div class="form-group">
+        <label>Match:</label>
+        @Html.DropDownListFor(model => model.MatchId, (IEnumerable<SelectListItem>)ViewData["Matches"], "Select a match", new { @class = "form-control" })
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Home</h3>
+
+            <div class="form-group">
+                <label>Possession:</label>
+                <input type="number" class="form-control" asp-for="HomePossesion" required />
+            </div>
+
+            <div class="form-group">
+                <label>Shots:</label>
+                <input type="number" class="form-control" asp-for="HomeShot" required />
+            </div>
+
+            <div class="form-group">
+                <label>Shots on Target:</label>
+                <input type="number" class="form-control" asp-for="HomeShotOnTarget" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Corners:</label>
+                <input type="number" class="form-control" asp-for="HomeConers" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Yellow Cards:</label>
+                <input type="number" class="form-control" asp-for="HomeYcard" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Red Cards:</label>
+                <input type="number" class="form-control" asp-for="HomeRcard" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Passes:</label>
+                <input type="number" class="form-control" asp-for="HomePass" required/>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Away</h3>
+
+            <div class="form-group">
+                <label>Possession:</label>
+                <input type="number" class="form-control" asp-for="AwayPossesion" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Shots:</label>
+                <input type="number" class="form-control" asp-for="AwayShot" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Shots on Target:</label>
+                <input type="number" class="form-control" asp-for="AwayShotOnTarget" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Corners:</label>
+                <input type="number" class="form-control" asp-for="AwayConers" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Yellow Cards:</label>
+                <input type="number" class="form-control" asp-for="AwayYcard" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Red Cards:</label>
+                <input type="number" class="form-control" asp-for="AwayRcard" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Passes:</label>
+                <input type="number" class="form-control" asp-for="AwayPass" required/>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top:10px">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/match" class="btn btn-secondary">Back</a>
+    </div>
+</form>
+<script>
+    function validateForm() {
+        var homeShot = parseInt(document.getElementById("HomeShot").value);
+        var homeShotOnTarget = parseInt(document.getElementById("HomeShotOnTarget").value);
+        var awayShot = parseInt(document.getElementById("AwayShot").value);
+        var awayShotOnTarget = parseInt(document.getElementById("AwayShotOnTarget").value);
+
+        if (homeShotOnTarget > homeShot) {
+            alert("Số lượng Shots on Target không được lớn hơn số lượng Shots (Home).");
+            return false;
+        }
+
+        if (awayShotOnTarget > awayShot) {
+            alert("Số lượng Shots on Target không được lớn hơn số lượng Shots (Away).");
+            return false;
+        }
+
+        return true;
+    }
+</script>

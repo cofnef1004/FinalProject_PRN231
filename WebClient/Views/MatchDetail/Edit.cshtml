@@ -1,0 +1,102 @@
+﻿@model BussinessObject.Models.MatchDetail
+
+
+@if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+        <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+        </div>
+}
+
+<form asp-action="Edit" asp-route-id="@Model.MatchDetailId" method="post">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Home</h4>
+
+            <div class="form-group">
+                <label asp-for="HomePossesion">Possession:</label>
+                <input asp-for="HomePossesion" class="form-control" value="@Model.HomePossesion" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HomeShot">Shots:</label>
+                <input asp-for="HomeShot" class="form-control" value="@Model.HomeShot" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HomeShotOnTarget">Shots on Target:</label>
+                <input asp-for="HomeShotOnTarget" class="form-control" value="@Model.HomeShotOnTarget" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HomeConers">Corners:</label>
+                <input asp-for="HomeConers" class="form-control" value="@Model.HomeConers" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HomeYcard">Yellow Cards:</label>
+                <input asp-for="HomeYcard" class="form-control" value="@Model.HomeYcard" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HomeRcard">Red Cards:</label>
+                <input asp-for="HomeRcard" class="form-control" value="@Model.HomeRcard" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HomePass">Passes:</label>
+                <input asp-for="HomePass" class="form-control" value="@Model.HomePass" />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Away</h4>
+
+            <div class="form-group">
+                <label asp-for="AwayPossesion">Possession:</label>
+                <input asp-for="AwayPossesion" class="form-control" value="@Model.AwayPossesion" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AwayShot">Shots:</label>
+                <input asp-for="AwayShot" class="form-control" value="@Model.AwayShot" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AwayShotOnTarget">Shots on Target:</label>
+                <input asp-for="AwayShotOnTarget" class="form-control" value="@Model.AwayShotOnTarget" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AwayConers">Corners:</label>
+                <input asp-for="AwayConers" class="form-control" value="@Model.AwayConers" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AwayYcard">Yellow Cards:</label>
+                <input asp-for="AwayYcard" class="form-control" value="@Model.AwayYcard" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AwayRcard">Red Cards:</label>
+                <input asp-for="AwayRcard" class="form-control" value="@Model.AwayRcard" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AwayPass">Passes:</label>
+                <input asp-for="AwayPass" class="form-control" value="@Model.AwayPass" />
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:10px">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a href="/match" class="btn btn-secondary">Back</a>
+    </div>
+</form>

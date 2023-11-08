@@ -1,0 +1,55 @@
+﻿@model BussinessObject.Models.Match
+@{
+	var referees = ViewData["Referees"] as SelectList;
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+}
+<style>
+	.player-avatar {
+		width: 100px;
+		height: 100px;
+	}
+</style>
+
+@using (Html.BeginForm("Edit", "Match", FormMethod.Post))
+{
+	@Html.HiddenFor(model => model.MatchId)
+
+	<div class="form-group">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="card-columns">
+					<div class="d-flex flex-column align-items-center">
+						<img class="player-avatar" src="@Model.HomeNavigation.Logo" alt="Home Logo" />
+						<span>@Model.HomeNavigation.Name</span>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card-columns">
+					<div class="text-center">
+						<label>Referees</label>
+						@Html.DropDownListFor(model => model.RefId, referees, " Select Referees ", new { @class = "form-control text-center custom-dropdown" })
+						@Html.ValidationMessageFor(model => model.RefId)
+					</div>
+					<div class="text-center">
+						<label>@Html.LabelFor(model => model.Result)</label>
+						@Html.TextBoxFor(model => model.Result, new { @class = "form-control text-center" })
+						@Html.ValidationMessageFor(model => model.Result)
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card-columns">
+					<div class="d-flex flex-column align-items-center">
+						<img class="player-avatar" src="@Model.AwayNavigation.Logo" alt="Home Logo" />
+						<span>@Model.AwayNavigation.Name</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<button style="float:right;margin-top:50px" type="submit" class="btn btn-primary">Update</button>
+}
+
