@@ -3,12 +3,27 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 	<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	var role = TempData["Role"] as string;
 }
 @{
-	Layout = "_Homelayout";
+	Layout = "_demo";
 }
 <link rel="stylesheet" type="text/css" href="~/css/Rank/index.css">
 <style>
+	.btn-group-vertical {
+		display: flex;
+		flex-direction: column;
+	}
+
+		.btn-group-vertical > * {
+			margin-bottom: 10px;
+		}
+
+	.btn-reset {
+		background-color: red;
+		color: white;
+	}
+
 	.club-logo {
 		width: 40px;
 		height: 40px;
@@ -26,59 +41,138 @@
 
 <div class="Wrap">
 	<div class="container">
-@*		@if (TempData["UserRole"]?.ToString() == "Admin")
+		@if (role.Equals("Admin"))
 		{
-			<div class="mb-3">
-				<form id="updateForm" action="@Url.Action("UpdateRankings", "Ranking")" method="post">
-					<button style="float:right" class="btn btn-primary" type="button" onclick="confirmUpdate()">Update</button>
-				</form>
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="card h-100">
+									<div class="card-body">
+										<div class="table-responsive">
+											<div class="mb-3">
+												<form id="addForm" action="@Url.Action("AddClubToRanking", "Ranking")" method="post">
+													<select id="clubId" name="clubId" placeholder="Club">
+														@foreach (var item in (SelectList)ViewData["Club"])
+														{
+															<option value="@item.Value">@item.Text</option>
+														}
+													</select>
+													<button style="float:right" class="btn btn-primary" type="button" onclick="confirmAdd()">Add Club</button>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="card h-100">
+									<div class="card-body">
+										<div class="table-responsive">
+											<div class="mb-3">
+												<div class="btn-group-vertical">
+													<form id="updateForm" action="@Url.Action("UpdateRankings", "Ranking")" method="post">
+														<button style="float:right" class="btn btn-primary" type="button" onclick="confirmUpdate()">Update : Automatic</button>
+													</form>
+													<a href="/Ranking/UpdateAllRankings" style="width:163px" class="btn btn-primary">Update : Manual</a>
+													<form asp-controller="Ranking" asp-action="Reset" method="post">
+														<button type="submit" class="btn btn-primary btn-reset">Reset Rankings</button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-		}*@
-		<div class="mb-3">
-			<form id="updateForm" action="@Url.Action("UpdateRankings", "Ranking")" method="post">
-				<button style="float:right" class="btn btn-primary" type="button" onclick="confirmUpdate()">Update</button>
-			</form>
+		}
+		@if (!string.IsNullOrEmpty(ViewBag.Message))
+		{
+			<div class="alert alert-success">@ViewBag.Message</div>
+		}
+		@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+		{
+			<div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+		}
+		<div class="grid-margin stretch-card">
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>Rank</th>
+									<th>Club</th>
+									<th>MP</th>
+									<th>W</th>
+									<th>D</th>
+									<th>L</th>
+									<th>Dif</th>
+									<th>Point</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								@{
+									int i = 1;
+									bool overallStatus = false;
+								}
+								@foreach (var rank in Model)
+								{
+									bool isStatusActive = rank.Status ?? false;
+									if (!overallStatus && isStatusActive)
+									{
+										overallStatus = true;
+									}
+									<tr>
+										<td>@i</td>
+										<td>
+											<img src="@rank.Club.Logo" alt="Avatar" class="club-logo">
+											<span class="ml-2 font-medium">@rank.Club.Name</span>
+										</td>
+										<td>@rank.MatchPlayed</td>
+										<td>@rank.Win</td>
+										<td>@rank.Draw</td>
+										<td>@rank.Loose</td>
+										<td>@rank.Difference</td>
+										<td>@rank.Point</td>
+										<td>
+											@if (role.Equals("Admin"))
+											{
+												<form method="post" action="@Url.Action("DeleteClubFromRanking", new { clubId = rank.ClubId })" style="display: inline">
+													<button type="submit" style="border-radius: 8px; text-decoration: none">Delete</button>
+												</form>
+											}
+										</td>
+									</tr>
+									i++;
+								}
+							</tbody>
+						</table>
+						@if (role.Equals("Admin"))
+						{
+							<div class="grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="table-responsive">
+											<div class="mb-3">
+												<p>Status: <span style="@(overallStatus ? "color: red; font-weight: bold; font-size: 18px;" : "color: green; font-weight: bold; font-size: 18px;")">@(overallStatus ? "Pause" : "In Process")</span></p>
+												<button style="float:right" class="btn btn-primary" type="button" onclick="toggleAllStatus()">Status</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
 		</div>
-
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>Rank</th>
-					<th>Club</th>
-					<th>Round</th>
-					<th>P</th>
-					<th>W</th>
-					<th>D</th>
-					<th>L</th>
-					<th>Dif</th>
-					<th>Point</th>
-				</tr>
-			</thead>
-			<tbody>
-				@{
-					int i = 1;
-				}
-				@foreach (var rank in Model)
-				{
-					<tr>
-						<td>@i</td>
-						<td>
-							<img src="@rank.Club.Logo" alt="Avatar" class="club-logo">
-							<span class="ml-2 font-medium">@rank.Club.Name</span>
-						</td>
-						<td>@rank.Round</td>
-						<td>@rank.MatchPlayed</td>
-						<td>@rank.Win</td>
-						<td>@rank.Draw</td>
-						<td>@rank.Loose</td>
-						<td>@rank.Difference</td>
-						<td>@rank.Point</td>
-					</tr>
-					i++;
-				}
-			</tbody>
-
-		</table>
 	</div>
 </div>
 
@@ -86,6 +180,30 @@
 	function confirmUpdate() {
 		if (confirm("Are you sure you want to update the rankings?")) {
 			document.getElementById("updateForm").submit();
+		}
+	}
+	function confirmAdd() {
+		var clubId = document.getElementById("clubId").value;
+		if (clubId !== "") {
+			if (confirm("Are you sure you want to add this club to the ranking?")) {
+				document.getElementById("addForm").submit();
+			}
+		} else {
+			alert("Please enter a valid Club ID");
+		}
+	}
+
+	function toggleAllStatus() {
+		if (confirm("Are you sure you want to toggle the status for all clubs?")) {
+			$.ajax({
+				url: '@Url.Action("ToggleAllStatus", "Ranking")',
+				type: 'POST',
+				success: function (result) {
+					location.reload();
+				},
+				error: function (xhr, status, error) {
+				}
+			});
 		}
 	}
 </script>

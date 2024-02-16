@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Numerics;
@@ -18,6 +19,7 @@ namespace WebClient.Controllers
 		private string ClubApiUrl = "";
 		private string StaApiUrl = "";
 		private string RefApiUrl = "";
+		private string MatchDetailApiUrl = "";
 
 		public MatchController()
 		{
@@ -28,6 +30,7 @@ namespace WebClient.Controllers
 			ClubApiUrl = "http://localhost:5282/api/Club";
 			StaApiUrl = "http://localhost:5282/api/Stadium";
 			RefApiUrl = "http://localhost:5282/api/Ref";
+			MatchDetailApiUrl = "http://localhost:5282/api/MatchDetail";
 		}
 
 		private async Task<List<Stadium>> GetStadia()
@@ -72,6 +75,11 @@ namespace WebClient.Controllers
 			{
 				ViewBag.ErrorMessage = TempData["ErrorMessage"];
 			}
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			TempData["Role"] = role;
 			HttpResponseMessage response;
 			if (round.HasValue && round.Value != 0)
 			{
@@ -115,60 +123,121 @@ namespace WebClient.Controllers
 			return View(matches);
 		}
 
-		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> GetMatchesByClub(int clubId)
+		{
+			HttpResponseMessage Response = await client.GetAsync($"{MatchApiUrl}/Club/{clubId}");
+			string StrData = await Response.Content.ReadAsStringAsync();
+			var options = new JsonSerializerOptions
+			{
+				PropertyNameCaseInsensitive = true,
+			};
+			List<Match> matches = JsonSerializer.Deserialize<List<Match>>(StrData, options);
+			List<Club> clubs = await GetClubs();
+			List<Stadium> stadia = await GetStadia();
+			List<Referee> referees = await GetReferees();
+			foreach (var home in matches)
+			{
+				Club club = clubs.FirstOrDefault(c => c.ClubId == home.Home);
+				home.HomeNavigation = club;
+			}
+			foreach (var away in matches)
+			{
+				Club club = clubs.FirstOrDefault(c => c.ClubId == away.Away);
+				away.AwayNavigation = club;
+			}
+			foreach (var match in matches)
+			{
+				Stadium stadium = stadia.FirstOrDefault(c => c.StadiumId == match.StadiumId);
+				match.Stadium = stadium;
+
+				Referee referee = referees.FirstOrDefault(c => c.RefId == match.RefId);
+				match.Ref = referee;
+			}
+			return View(matches);
+		}
+
 		public async Task<IActionResult> Edit(int id)
 		{
-			List<Referee> referees = await GetReferees();
-			ViewData["Referees"] = new SelectList(referees, "RefId", "Name");
-			HttpResponseMessage Response = await client.GetAsync($"{MatchApiUrl}/{id}");
-			if (Response.IsSuccessStatusCode)
+            string token = HttpContext.Session.GetString("token");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				string StrData = await Response.Content.ReadAsStringAsync();
-				var options = new JsonSerializerOptions
+				List<Referee> referees = await GetReferees();
+				ViewData["Referees"] = new SelectList(referees, "RefId", "Name");
+				HttpResponseMessage Response = await client.GetAsync($"{MatchApiUrl}/{id}");
+				if (Response.IsSuccessStatusCode)
 				{
-					PropertyNameCaseInsensitive = true,
-				};
-				Match match = JsonSerializer.Deserialize<Match>(StrData, options);
-				return View(match);
+					string StrData = await Response.Content.ReadAsStringAsync();
+					var options = new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true,
+					};
+					Match match = JsonSerializer.Deserialize<Match>(StrData, options);
+					return View(match);
+				}
 			}
-			return NotFound();
-		}
+            return RedirectToAction("Index", "Denied");
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> Edit(int id, Match match)
-		{
-			HttpResponseMessage response = await client.PutAsJsonAsync($"{MatchApiUrl}/{id}", match);
-			if (response.IsSuccessStatusCode)
+        {
+            string token = HttpContext.Session.GetString("token");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				return RedirectToAction("Index");
+				HttpResponseMessage response = await client.PutAsJsonAsync($"{MatchApiUrl}/{id}", match);
+				if (response.IsSuccessStatusCode)
+				{
+					return RedirectToAction("Index");
+				}
 			}
-			return BadRequest();
-		}
+            return RedirectToAction("Index", "Denied");
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> GenerateMatches(int round)
 		{
-			HttpResponseMessage response = await client.PostAsync($"{MatchApiUrl}/generate?round={round}", null);
-			if (response.IsSuccessStatusCode)
+            string token = HttpContext.Session.GetString("token");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				return RedirectToAction("Index");
+				HttpResponseMessage response = await client.PostAsync($"{MatchApiUrl}/generate?round={round}", null);
+				if (response.IsSuccessStatusCode)
+				{
+					return RedirectToAction("Index");
+				}
+				else
+				{
+					ViewBag.ErrorMessage1 = "All previous round matches must be completed before a new round can be created";
+					return StatusCode((int)response.StatusCode);
+				}
 			}
-			else
-			{
-				ViewBag.ErrorMessage1 = "All previous round matches must be completed before a new round can be created";
-				return StatusCode((int)response.StatusCode);
-			}
-		}
+            return RedirectToAction("Index", "Denied");
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> Delete(int id)
 		{
-			HttpResponseMessage response = await client.DeleteAsync($"{MatchApiUrl}/{id}");
-			if (response.IsSuccessStatusCode)
+            string token = HttpContext.Session.GetString("token");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				return RedirectToAction("Index");
+				HttpResponseMessage response = await client.DeleteAsync($"{MatchApiUrl}/{id}");
+				if (response.IsSuccessStatusCode)
+				{
+					return RedirectToAction("Index");
+				}
 			}
-			return NotFound();
-		}
+            return RedirectToAction("Index", "Denied");
+        }
 	}
 }

@@ -14,5 +14,11 @@ namespace Repository.IRepository
 	{
 		UserDTO Login(string username, string password);
 		public UserDTO? CheckUserLogin(LoginRequest request);
+
+		public UserDTO? Register(RegisRequest request);
+
+		public UserDTO? GetUserById(int id);
+
+		void Update(UserDTO userDTO);
 	}
 }

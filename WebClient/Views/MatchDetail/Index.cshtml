@@ -1,8 +1,9 @@
 ﻿@model BussinessObject.Models.MatchDetail
 
 @{
-	Layout = "_Homelayout";
+	Layout = "_demo";
 	<link rel="stylesheet" type="text/css" href="~/css/Player/PlayerIndex.css">
+	var role = TempData["Role"] as string;
 }
 
 <style>
@@ -33,62 +34,66 @@
 		}
 		else
 		{
-			<table class="custom-table">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Home</th>
-						<th>Away</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Possession</td>
-						<td>@Model.HomePossesion%</td>
-						<td>@Model.AwayPossesion%</td>
-					</tr>
-					<tr>
-						<td>Shots</td>
-						<td>@Model.HomeShot</td>
-						<td>@Model.AwayShot</td>
-					</tr>
-					<tr>
-						<td>Shots on Target</td>
-						<td>@Model.HomeShotOnTarget</td>
-						<td>@Model.AwayShotOnTarget</td>
-					</tr>
-					<tr>
-						<td>Corners</td>
-						<td>@Model.HomeConers</td>
-						<td>@Model.AwayConers</td>
-					</tr>
-					<tr>
-						<td>Yellow Cards</td>
-						<td>@Model.HomeYcard</td>
-						<td>@Model.AwayYcard</td>
-					</tr>
-					<tr>
-						<td>Red Cards</td>
-						<td>@Model.HomeRcard</td>
-						<td>@Model.AwayRcard</td>
-					</tr>
-					<tr>
-						<td>Passes</td>
-						<td>@Model.HomePass</td>
-						<td>@Model.AwayPass</td>
-					</tr>
-				</tbody>
-			</table>
-@*			@if (TempData["UserRole"]?.ToString() == "Admin")
-			{
-				<form action="@Url.Action("Edit", new { id = Model.MatchDetailId })" style="display:inline">
-					<button type="submit" style="border-radius:8px; text-decoration: none">Edit</button>
-				</form>
-			}*@
-			<form action="@Url.Action("Edit", new { id = Model.MatchDetailId })" style="display:inline">
-				<button type="submit" style="border-radius:8px; text-decoration: none">Edit</button>
-			</form>
+			<div class="grid-margin stretch-card">
+				<div class="card">
+					<div class="card-body">
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th></th>
+										<th>Home</th>
+										<th>Away</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Possession</td>
+										<td>@Model.HomePossesion%</td>
+										<td>@Model.AwayPossesion%</td>
+									</tr>
+									<tr>
+										<td>Shots</td>
+										<td>@Model.HomeShot</td>
+										<td>@Model.AwayShot</td>
+									</tr>
+									<tr>
+										<td>Shots on Target</td>
+										<td>@Model.HomeShotOnTarget</td>
+										<td>@Model.AwayShotOnTarget</td>
+									</tr>
+									<tr>
+										<td>Corners</td>
+										<td>@Model.HomeConers</td>
+										<td>@Model.AwayConers</td>
+									</tr>
+									<tr>
+										<td>Yellow Cards</td>
+										<td>@Model.HomeYcard</td>
+										<td>@Model.AwayYcard</td>
+									</tr>
+									<tr>
+										<td>Red Cards</td>
+										<td>@Model.HomeRcard</td>
+										<td>@Model.AwayRcard</td>
+									</tr>
+									<tr>
+										<td>Passes</td>
+										<td>@Model.HomePass</td>
+										<td>@Model.AwayPass</td>
+									</tr>
+								</tbody>
+							</table>
+							@if (role.Equals("Admin"))
+							{
+								<form action="@Url.Action("Edit", new { id = Model.MatchDetailId })" style="display:inline">
+									<button type="submit" style="border-radius:8px; text-decoration: none">Edit</button>
+								</form>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
 		}
 	</div>
 </div>
-}

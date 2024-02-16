@@ -7,13 +7,15 @@ using System.Text;
 using BussinessObject.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace WebClient.Controllers
 {
 	public class LoginController : Controller
 	{
 		private readonly HttpClient client = null;
-
 		private string LoginApiUrl = "";
 
 		public LoginController()
@@ -27,69 +29,33 @@ namespace WebClient.Controllers
 		[HttpGet]
 		public IActionResult Index()
 		{
+			ViewBag.ErrorMessage = TempData["ErrorMessage"];
+			TempData.Remove("ErrorMessage");
 			return View();
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Index(string username, string password)
+		public async Task<IActionResult> Login()
 		{
-			var jwt = await LoginAsync(username, password);
-			if (!string.IsNullOrEmpty(jwt))
+			LoginRequest request = new LoginRequest();
+			request.Username = HttpContext.Request.Form["username"];
+			request.Password = HttpContext.Request.Form["password"];
+			var jsonContent = System.Text.Json.JsonSerializer.Serialize(request);
+			var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+			HttpResponseMessage response = await client.PostAsync($"{LoginApiUrl}", content);
+			if (!response.IsSuccessStatusCode)
 			{
-				var tokenHandler = new JwtSecurityTokenHandler();
-				var token = tokenHandler.ReadJwtToken(jwt);
-				var roles = token.Claims.Where(c => c.Type == "role").Select(c => c.Value).ToList();
-				if (roles.Contains("Admin"))
-				{
-					var cookieOptions = new CookieOptions
-					{
-						HttpOnly = true,
-						Expires = DateTime.UtcNow.AddHours(1)
-					}; 
-					Response.Cookies.Append("jwt", jwt, cookieOptions);
-					HttpContext.Session.SetString("UserRole", "Admin");
-					return Redirect("/homepage");
-				}
-				else if (roles.Contains("User"))
-				{
-					var cookieOptions = new CookieOptions
-					{
-						HttpOnly = true,
-						Expires = DateTime.UtcNow.AddHours(1)
-					};
-					Response.Cookies.Append("jwt", jwt, cookieOptions);
-					HttpContext.Session.SetString("UserRole", "User");
-					return Redirect("/homepage");
-				}
-				else
-				{
-					ViewBag.ErrorMessage = "Invalid Role";
-					return View("Index");
-				}
+				TempData["ErrorMessage"] = "Login Failed";
+				return Redirect("/Login");
 			}
 			else
 			{
-				ViewBag.ErrorMessage = "Invalid Username or Password";
-				return View("Index");
+				string strData = await response.Content.ReadAsStringAsync();
+				var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(strData);
+				var token = loginResponse.Token;
+				HttpContext.Session.SetString("token", token);
 			}
-		}
-
-		public async Task<string> LoginAsync(string username, string password)
-		{
-			var loginRequest = new LoginRequest()
-			{
-				Username = username,
-				Password = password
-			};
-			var jsonContent = new StringContent(JsonSerializer.Serialize(loginRequest), Encoding.UTF8, "application/json");
-			var response = await client.PostAsync(LoginApiUrl, jsonContent);
-			var strData = await response.Content.ReadAsStringAsync();
-			var options = new JsonSerializerOptions()
-			{
-				PropertyNameCaseInsensitive = true
-			};
-			var loginResponse = JsonSerializer.Deserialize<LoginResponse>(strData, options);
-			return loginResponse.Token;
+			return Redirect("/homepage");
 		}
 	}
 }

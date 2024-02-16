@@ -24,6 +24,11 @@ namespace DataAccess.DAO
 			return user;
 		}
 
+		public User GetUserById(int id)
+		{
+			return _context.Users.FirstOrDefault(p => p.UserId == id);
+		}
+
 		public static User? CheckUserLogin(LoginRequest request)
 		{
 			try
@@ -39,5 +44,50 @@ namespace DataAccess.DAO
 			}
 		}
 
+		public void Edit(User user)
+		{
+			var c = _context.Users.FirstOrDefault(p => p.UserId == user.UserId);
+			if (c != null)
+			{
+				c.Username = user.Username;
+				c.Password = user.Password;
+				c.Phone = user.Phone;
+				_context.SaveChanges();
+			}
+		}
+
+		public static User Register(RegisRequest request)
+		{
+			try
+			{
+				using var context = new FinalProPrn231Context();
+				var existingUser = context.Users.FirstOrDefault(u => u.Username == request.Username);
+				if (existingUser != null)
+				{
+					throw new Exception("Username already exists.");
+				}
+				if (request.Username.ToLower() == "admin")
+				{
+					throw new Exception("Username cannot be 'Admin'.");
+				}
+				var user = new User
+				{
+					Username = request.Username,
+					Password = request.Password,
+					Phone = request.Phone,
+					RoleId = request.RoleId
+				};
+
+				context.Users.Add(user);
+				context.SaveChanges();
+
+				return user;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
+		}
 	}
 }

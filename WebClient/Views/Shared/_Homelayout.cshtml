@@ -1,4 +1,7 @@
-﻿<style>
+﻿@{
+	string role = @ViewBag.Role;
+}
+<style>
 	#sidebar {
 		height: 100vh;
 	}
@@ -20,8 +23,8 @@
 	<div class="wrapper d-flex align-items-stretch">
 		<nav style="min-height:100vh" id="sidebar">
 			<div class="custom-menu">
-				<button type="button" id="sidebarCollapse" class="btn btn-primary">
-				</button>
+@*				<button type="button" id="sidebarCollapse" class="btn btn-primary">
+				</button>*@
 			</div>
 			<div class="img bg-wrap text-center py-4">
 				<div class="user-logo">
@@ -41,14 +44,19 @@
 				<li style="text-decoration:none">
 					<a style="text-decoration:none" href="~/Match"><small class="d-flex align-items-center justify-content-center"></small>Schedule</a>
 				</li>
-@*				@if (TempData["UserRole"]?.ToString() == "Admin")
-				{
-					<li style="text-decoration:none">
-						<a style="text-decoration:none" href="~/MatchDetail/Add"><small class="d-flex align-items-center justify-content-center"></small>Manager Match Details</a>
-					</li>
-				}*@
 				<li style="text-decoration:none">
-					<a style="text-decoration:none" href="~/MatchDetail/Add"><small class="d-flex align-items-center justify-content-center"></small>Manager Match Details</a>
+					<a style="text-decoration:none" href="~/FavoClub"><small class="d-flex align-items-center justify-content-center"></small>Favorite Clubs</a>
+				</li>
+				<li style="text-decoration:none">
+					<a style="text-decoration:none" href="~/MatchDetail/Add"><small class="d-flex align-items-center justify-content-center"></small>Match Details Manager</a>
+				</li>
+				<li style="text-decoration:none">
+					<a style="text-decoration:none" href="~/Player/Create"><small class="d-flex align-items-center justify-content-center"></small>Player Manager</a>
+				</li>
+				<li style="text-decoration:none">
+					<a style="text-decoration:none" href="~/MatchDetail/Add">
+						<small class="d-flex align-items-center justify-content-center"></small>Log Out
+					</a>
 				</li>
 			</ul>
 		</nav>

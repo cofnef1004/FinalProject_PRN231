@@ -1,5 +1,6 @@
 ﻿using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -48,6 +49,11 @@ namespace WebClient.Controllers
 
 		public async Task<IActionResult> Index(int clubId)
 		{
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			TempData["Role"] = role;
 			List<ManagerClub> managerClubs = new List<ManagerClub>();
 			HttpResponseMessage Response = await client.GetAsync($"{ManagerClubAPI}/GetManagerByClub/{clubId}");
 			string StrData = await Response.Content.ReadAsStringAsync();

@@ -1,0 +1,110 @@
+﻿@using BussinessObject.Models;
+@{
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	List<Match> matches = ViewData["matches"] as List<Match>;
+	var role = TempData["Role"] as string;
+	Layout = "_demo";
+	<link rel="stylesheet" href="~/vendors/feather/feather.css">
+	<link rel="stylesheet" href="~/vendors/mdi/css/materialdesignicons.min.css">
+	<link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css">
+	<link rel="stylesheet" href="~/vendors/typicons/typicons.css">
+	<link rel="stylesheet" href="~/vendors/simple-line-icons/css/simple-line-icons.css">
+	<link rel="stylesheet" href="~/vendors/css/vendor.bundle.base.css">
+	<!-- endinject -->
+	<!-- Plugin css for this page -->
+	<link rel="stylesheet" href="~/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+	<link rel="stylesheet" href="~/js/select.dataTables.min.css">
+	<!-- End plugin css for this page -->
+	<!-- inject:css -->
+	<link rel="stylesheet" href="~/css/vertical-layout-light/style.css">
+	<!-- endinject -->
+	<link rel="shortcut icon" href="images/favicon.png" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+}
+@{
+	Layout = "_demo";
+	int round = ViewData["round"] as int? ?? 0;
+}
+@{
+	int? currentRound = ViewBag.CurrentRound;
+	SelectList rounds = ViewBag.Rounds;
+}
+<style>
+	.player-avatar {
+		width: 100px;
+		height: 100px;
+	}
+
+	.Wrap {
+		height: 100vh;
+		overflow-y: scroll;
+	}
+
+		.Wrap::-webkit-scrollbar {
+			display: none;
+		}
+</style>
+<link rel="stylesheet" type="text/css" href="~/css/Player/PlayerIndex.css">
+
+<div class="Wrap">
+	<div class="container">
+		<div class="grid-margin stretch-card">
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var match in Model)
+								{
+									<tr>
+										<td>
+											<img src="@match.HomeNavigation.Logo" alt="Avatar" class="player-avatar"><p>@match.HomeNavigation.Name</p>
+											<a href="@Url.Action("Index", "PlayerMatchRegistration", new { clubId = match.Home,matchId = match.MatchId })" style="border-radius:8px; text-decoration: none;display:inline" class="btn btn-primary">Starting Lineup</a>
+										</td>
+										<td>
+											<p>Round : @match.Round</p>
+											<p>Stadium : @match.HomeNavigation.Stadium.Name</p><h5>@match.Ref.Name</h5>
+											<h3>@match.Result</h3>
+										</td>
+										<td>
+											<img src="@match.AwayNavigation.Logo" alt="Avatar" class="player-avatar"><p>@match.AwayNavigation.Name</p>
+											<a href="@Url.Action("Index", "PlayerMatchRegistration", new { clubId = match.Away,matchId = match.MatchId })" style="border-radius:8px; text-decoration: none;display:inline" class="btn btn-primary">Starting Lineup</a>
+										</td>
+										<td>
+											@if (match.Status == false)
+											{
+												<text>Not Start</text>
+											}
+											else
+											{
+												<text>Done</text>
+											}
+										</td>
+										<td>
+											@if (match.Status == true)
+											{
+												<a href="@Url.Action("Index", "MatchDetail", new { matchId = match.MatchId })" style="border-radius:8px; text-decoration: none;display:inline" class="btn btn-primary">View Match Detail</a>
+											}
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

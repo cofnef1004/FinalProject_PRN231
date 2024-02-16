@@ -24,6 +24,7 @@ namespace DataAccess.DTO
 		public int Point { get; set; }
 
 		public int MatchPlayed { get; set; }
+		public bool? Status { get; set; }
 
 		public virtual ClubDTO Club { get; set; } = null!;
 	}

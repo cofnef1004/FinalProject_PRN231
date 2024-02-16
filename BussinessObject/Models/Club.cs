@@ -7,8 +7,6 @@ public partial class Club
 {
     public int ClubId { get; set; }
 
-    public int UserId { get; set; }
-
     public string Name { get; set; } = null!;
 
     public int StadiumId { get; set; }
@@ -17,7 +15,11 @@ public partial class Club
 
     public string? Logo { get; set; }
 
+    public bool? Status { get; set; }
+
     public virtual City City { get; set; } = null!;
+
+    public virtual ICollection<FavoriteClub> FavoriteClubs { get; set; } = new List<FavoriteClub>();
 
     public virtual ICollection<ManagerClub> ManagerClubs { get; set; } = new List<ManagerClub>();
 
@@ -30,6 +32,4 @@ public partial class Club
     public virtual ICollection<Ranking> Rankings { get; set; } = new List<Ranking>();
 
     public virtual Stadium Stadium { get; set; } = null!;
-
-    public virtual User User { get; set; } = null!;
 }

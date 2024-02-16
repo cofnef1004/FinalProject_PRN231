@@ -22,7 +22,7 @@ namespace API_Web.Controllers
 		}
 
 		[HttpGet]
-        public IActionResult GetClubs()
+		public IActionResult GetClubs()
         {
             try
             {
@@ -38,24 +38,6 @@ namespace API_Web.Controllers
 		public ActionResult<ClubDTO> GetClubById(int id)
 		{
 			return _clubRepository.GetClubById(id);
-		}
-
-		[HttpGet("user/{userId}")]
-		public IActionResult GetClubByUserId(int userId)
-		{
-			try
-			{
-				var club = _clubRepository.GetClubByUserId(userId);
-				if (club == null)
-				{
-					return NotFound();
-				}
-				return Ok(club);
-			}
-			catch (Exception)
-			{
-				return BadRequest();
-			}
 		}
 
 		[HttpGet("{clubId}/players")]
@@ -96,13 +78,42 @@ namespace API_Web.Controllers
 				return BadRequest();
 			}
 		}
+		/*		[HttpPut("{Id}")]
+				public IActionResult UpdateClub(int id, ClubDTO clubDTO)
+				{
+					clubDTO.ClubId = id;
+					try
+					{
+						var logoFile = Request.Form.Files.FirstOrDefault();
+						_clubRepository.Update(clubDTO, logoFile); // Gọi đến phương thức Update mới trong ClubRepository
+						return Ok();
+					}
+					catch (Exception)
+					{
+						return BadRequest();
+					}
+				}*/
 
 		[HttpDelete("{id}")]
-		public IActionResult DeleteClub(int clubId)
+		public IActionResult DeleteClub(int id)
 		{
 			try
 			{
-				_clubRepository.Delete(clubId);
+				_clubRepository.Delete(id);
+				return Ok();
+			}
+			catch (Exception)
+			{
+				return BadRequest();
+			}
+		}
+
+		[HttpPut("togglestatus/{id}")]
+		public IActionResult ToggleClubStatus(int id)
+		{
+			try
+			{
+				_clubRepository.ToggleClubStatus(id);
 				return Ok();
 			}
 			catch (Exception)

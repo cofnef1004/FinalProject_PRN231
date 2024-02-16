@@ -1,4 +1,5 @@
 ﻿using BussinessObject.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,9 +29,16 @@ namespace DataAccess.DAO
 
 		public void Add(PlayerMatchRegistration playerMatchRegistration)
 		{
+			bool isExisting = _context.PlayerMatchRegistrations
+				.Any(p => p.PlayerId == playerMatchRegistration.PlayerId && p.MatchId == playerMatchRegistration.MatchId);
+			if (isExisting)
+			{
+				return;
+			}
 			_context.PlayerMatchRegistrations.Add(playerMatchRegistration);
 			_context.SaveChanges();
 		}
+
 
 		public void Delete(int id)
 		{

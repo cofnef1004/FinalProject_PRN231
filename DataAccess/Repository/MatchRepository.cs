@@ -95,5 +95,12 @@ namespace Repository.Repository
 			List<MatchDTO> matches = mapper.Map<List<MatchDTO>>(matchDAO.GetMatchNotDone());
 			return matches;
 		}
+
+		public List<MatchDTO> GetMatchesByClub(int clubId)
+		{
+			matchDAO = new MatchDAO(_context);
+			List<MatchDTO> matches = mapper.Map<List<MatchDTO>>(matchDAO.GetMatchesByClub(clubId));
+			return matches;
+		}
 	}
 }

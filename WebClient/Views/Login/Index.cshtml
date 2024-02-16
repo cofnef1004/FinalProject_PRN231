@@ -23,30 +23,36 @@
 					<div style="color:white" class="card-body p-5 text-center">
 						<img src="https://cdn.freebiesupply.com/images/large/2x/premier-league-logo-png-transparent.png" class="w-100 rounded-4 shadow-4"
 							 alt="" />
-						@using (Html.BeginForm("Index", "Login", FormMethod.Post))
+						@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
 						{
-							<div class="form-outline mb-4">
-								<label for="Username">Username:</label>
-								<input type="text" name="Username" id="Username" />
+							<div style="color:red" class="error-message">
+								@ViewBag.ErrorMessage
 							</div>
-							<div class="form-outline mb-4">
-								<label for="Password">Password:</label>
-								<input type="password" name="Password" id="Password" />
-							</div>
-							<div>
-								<input type="submit" value="Login" />
-							</div>
-							@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-							{
-								<div style="color:red" class="error-message">
-									@ViewBag.ErrorMessage
-								</div>
-							}
 						}
+							<form method="post" asp-controller="Login" asp-action="Login">
+								<!-- Email input -->
+								<div class="form-outline mb-4">
+									<input type="text" id="form3Example3" class="form-control" name="username" required/>
+									<label class="form-label" style="color:black" for="form3Example3">Username</label>
+								</div>
+
+								<!-- Password input -->
+								<div class="form-outline mb-4">
+									<input type="password" id="form3Example4" class="form-control" name="password" required />
+									<label class="form-label" style="color:black" for="form3Example4">Password</label>
+								</div>
+
+								<!-- Submit button -->
+								<button type="submit" class="btn btn-primary">
+									Login
+								</button>
+							</form>
+							<form>
+								<a class="btn btn-primary" href="/regis">Register</a>
+							</form>
 					</div>
 				</div>
 			</div>
-
 			<div style="border-radius:10px" class="col-lg-7 mb-5 mb-lg-0">
 				<img style="border-radius:10px" src="https://www.taegukwarriors.com/wp-content/uploads/2020/08/FPL-Statement-Lead.jpg" class="w-100 rounded-4 shadow-4"
 					 alt="" />

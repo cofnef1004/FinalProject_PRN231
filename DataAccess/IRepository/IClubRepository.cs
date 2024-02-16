@@ -1,5 +1,6 @@
 ﻿using DataAccess.DAO;
 using DataAccess.DTO;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,11 @@ namespace Repository.IRepository
 
 		ClubDTO GetClubById(int id);
 
-		List<ClubDTO> GetClubByUserId(int userId);
-
 		void Create(ClubDTO clubDTO);
 
 		void Update(ClubDTO clubDTO);
 		void Delete(int clubId);
+
+		void ToggleClubStatus(int clubId);
 	}
 }

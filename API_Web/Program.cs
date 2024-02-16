@@ -1,4 +1,5 @@
 using BussinessObject.Models;
+using DataAccess.DAO;
 using DataAccess.IRepository;
 using DataAccess.Mapping;
 using DataAccess.Repository;
@@ -62,6 +63,10 @@ builder.Services.AddTransient<IManagerClubRepo, ManagerClubRepo>()
 builder.Services.AddTransient<IManagerRepo, ManagerRepo>()
 	.AddDbContext<FinalProPrn231Context>(opt =>
 	builder.Configuration.GetConnectionString("DB"));
+builder.Services.AddTransient<IFavoClubRepo, FavoRepo>()
+	.AddDbContext<FinalProPrn231Context>(opt =>
+	builder.Configuration.GetConnectionString("DB"));
+builder.Services.AddTransient<FavoClubDao>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -82,6 +87,12 @@ builder.Services.AddAuthentication(options =>
 			RoleClaimType = ClaimTypes.Role
 		};
 	});
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+	options.JsonSerializerOptions.PropertyNamingPolicy = null;
+	options.JsonSerializerOptions.DictionaryKeyPolicy = null;
+});
 
 builder.Services.AddAuthorization(options =>
 {

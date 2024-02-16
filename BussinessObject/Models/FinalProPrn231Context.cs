@@ -21,6 +21,8 @@ public partial class FinalProPrn231Context : DbContext
 
     public virtual DbSet<Country> Countries { get; set; }
 
+    public virtual DbSet<FavoriteClub> FavoriteClubs { get; set; }
+
     public virtual DbSet<Goal> Goals { get; set; }
 
     public virtual DbSet<Manager> Managers { get; set; }
@@ -78,11 +80,6 @@ public partial class FinalProPrn231Context : DbContext
                 .HasForeignKey(d => d.StadiumId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Club_Stadium");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Clubs)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Club_User");
         });
 
         modelBuilder.Entity<Country>(entity =>
@@ -92,6 +89,21 @@ public partial class FinalProPrn231Context : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<FavoriteClub>(entity =>
+        {
+            entity.ToTable("FavoriteClub");
+
+            entity.HasOne(d => d.Club).WithMany(p => p.FavoriteClubs)
+                .HasForeignKey(d => d.ClubId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FavoriteClub_Club");
+
+            entity.HasOne(d => d.User).WithMany(p => p.FavoriteClubs)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FavoriteClub_User");
         });
 
         modelBuilder.Entity<Goal>(entity =>
@@ -282,7 +294,6 @@ public partial class FinalProPrn231Context : DbContext
         {
             entity.ToTable("User");
 
-            entity.Property(e => e.UserId).ValueGeneratedNever();
             entity.Property(e => e.Password)
                 .HasMaxLength(50)
                 .IsUnicode(false);

@@ -4,6 +4,7 @@ using DataAccess.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Numerics;
 using System.Text;
@@ -54,6 +55,11 @@ namespace WebClient.Controllers
 
 		public async Task<IActionResult> Index(int clubId, int matchId)
 		{
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			TempData["Role"] = role;
 			HttpResponseMessage Response = await client.GetAsync($"{PlayerRegisApiUrl}/{clubId}/{matchId}");
 			string StrData = await Response.Content.ReadAsStringAsync();
 			var options = new JsonSerializerOptions
@@ -80,6 +86,7 @@ namespace WebClient.Controllers
 			int clubId = (int)TempData["ClubId"];
 			ViewData["MatchId"] = matchId;
 			ViewData["ClubId"] = clubId;
+			TempData["ClubId"] = clubId;
 			List<Player> players = await GetPlayersByClubId(clubId);
 			ViewData["Player"] = new SelectList(players, "PlayerId", "Name");
 			return View();

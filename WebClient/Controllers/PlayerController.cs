@@ -1,6 +1,7 @@
 ﻿using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -50,6 +51,11 @@ namespace WebClient.Controllers
 
 		public async Task<IActionResult> Index(int clubId)
 		{
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			TempData["Role"] = role;
 			HttpResponseMessage playerResponse = await client.GetAsync($"{PlayerApiUrl}/{clubId}");
 			string playerStrData = await playerResponse.Content.ReadAsStringAsync();
 			var options = new JsonSerializerOptions
@@ -76,60 +82,103 @@ namespace WebClient.Controllers
 		//Create
 		public async Task<IActionResult> Create()
 		{
-			return View();
-		}
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
+			{
+				List<Club> clubs = await GetClubs();
+				List<Country> countries = await GetCountries();
+				ViewData["Club"] = new SelectList(clubs, "ClubId", "Name");
+				ViewData["Country"] = new SelectList(countries, "CountryId", "Name");
+				int clubId = (int)TempData["ClubId"];
+				ViewData["ClubId"] = clubId;
+				TempData["ClubId"] = clubId;
+				return View();
+			}
+            return RedirectToAction("Index", "Denied");
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> Create(Player player)
 		{
-			HttpResponseMessage response = await client.PostAsJsonAsync(PlayerApiUrl, player);
-
-			if (response.IsSuccessStatusCode)
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				return RedirectToAction("Index");
+				HttpResponseMessage response = await client.PostAsJsonAsync(PlayerApiUrl, player);
+				if (response.IsSuccessStatusCode)
+				{
+					int clubId = (int)TempData["ClubId"];
+					return RedirectToAction("Index", new { clubId = clubId});
+					/*					return RedirectToAction("Index");*/
+				}
 			}
-			return BadRequest();
+			return RedirectToAction("Index","Denied");
 		}
 
 		public async Task<IActionResult> Edit(int id)
 		{
-			HttpResponseMessage Response = await client.GetAsync($"{PlayerApiUrl}/Player/{id}");
-			if (Response.IsSuccessStatusCode)
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				string StrData = await Response.Content.ReadAsStringAsync();
-				var options = new JsonSerializerOptions
+				HttpResponseMessage Response = await client.GetAsync($"{PlayerApiUrl}/Player/{id}");
+				if (Response.IsSuccessStatusCode)
 				{
-					PropertyNameCaseInsensitive = true,
-				};
-				Player player = JsonSerializer.Deserialize<Player>(StrData, options);
-				return View(player);
+					string StrData = await Response.Content.ReadAsStringAsync();
+					var options = new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true,
+					};
+					Player player = JsonSerializer.Deserialize<Player>(StrData, options);
+					return View(player);
+				}
 			}
-			return NotFound();
-		}
+            return RedirectToAction("Index", "Denied");
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> Edit(int id, Player player)
 		{
-			HttpResponseMessage response = await client.PutAsJsonAsync($"{PlayerApiUrl}/{id}", player);
-
-			if (response.IsSuccessStatusCode)
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				int clubId = (int)TempData["ClubId"];
-				return RedirectToAction("Index", new { clubId = clubId });
+				HttpResponseMessage response = await client.PutAsJsonAsync($"{PlayerApiUrl}/{id}", player);
+				if (response.IsSuccessStatusCode)
+				{
+					int clubId = (int)TempData["ClubId"];
+					return RedirectToAction("Index", new { clubId = clubId });
+				}
 			}
-			return BadRequest();
-		}
+            return RedirectToAction("Index", "Denied");
+        }
 
 		[HttpPost]
 		public async Task<IActionResult> Delete(int id)
 		{
-			HttpResponseMessage response = await client.DeleteAsync($"{PlayerApiUrl}/{id}");
-			if (response.IsSuccessStatusCode)
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				int clubId = (int)TempData["ClubId"];
-				return RedirectToAction("Index", new { clubId = clubId});
+				HttpResponseMessage response = await client.DeleteAsync($"{PlayerApiUrl}/{id}");
+				if (response.IsSuccessStatusCode)
+				{
+					int clubId = (int)TempData["ClubId"];
+					return RedirectToAction("Index", new { clubId = clubId });
+				}
 			}
-			return NotFound();
-		}
+            return RedirectToAction("Index", "Denied");
+        }
 	}
 }

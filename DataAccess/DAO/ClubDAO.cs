@@ -1,4 +1,5 @@
 ﻿using BussinessObject.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,23 +22,13 @@ namespace DataAccess.DAO
 		{
 			return _context.Clubs
 							.Include(p => p.City)
-							.Include(p => p.User).ThenInclude(p => p.Role)
 							.Include(p => p.Stadium).ToList();
-		}
-
-		public List<Club> GetClubByUserId(int userId)
-		{
-			return _context.Clubs
-							.Include(p => p.City)
-							.Include(p => p.User).ThenInclude(p => p.Role)
-							.Include(p => p.Stadium).Where(p => p.UserId == userId).ToList();
 		}
 
 		public Club GetClubById(int id)
 		{
 			return _context.Clubs
 							.Include(p => p.City)
-							.Include(p => p.User).ThenInclude(p => p.Role)
 							.Include(p => p.Stadium).FirstOrDefault(p => p.ClubId == id);
 		}
 
@@ -49,10 +40,9 @@ namespace DataAccess.DAO
 
 		public void UpdateClub(Club club)
 		{
-			var c = _context.Clubs.FirstOrDefault(p => p.ClubId== club.ClubId);
-			if (c != null) 
+			var c = _context.Clubs.FirstOrDefault(p => p.ClubId == club.ClubId);
+			if (c != null && c.Status == true)
 			{
-				c.Logo = club.Logo;
 				c.Name = club.Name;
 				c.StadiumId = club.StadiumId;
 				c.CityId = club.CityId;
@@ -60,20 +50,46 @@ namespace DataAccess.DAO
 			}
 		}
 
+		private string SaveLogoFile(IFormFile logoFile)
+		{
+			if (logoFile != null && logoFile.Length > 0)
+			{
+				string uniqueFileName = Guid.NewGuid().ToString() + "_" + logoFile.FileName;
+				string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+				if (!Directory.Exists(uploadPath))
+				{
+					Directory.CreateDirectory(uploadPath);
+				}
+				string filePath = Path.Combine(uploadPath, uniqueFileName);
+				using (var stream = new FileStream(filePath, FileMode.Create))
+				{
+					logoFile.CopyTo(stream);
+				}
+
+				return filePath;
+			}
+
+			return null;
+		}
+
 		public void DeleteClub(int clubId)
 		{
-			var club = _context.Clubs.Include(c => c.Players).FirstOrDefault(p => p.ClubId == clubId);
-			if (club != null)
+			var club = _context.Clubs.Include(c => c.FavoriteClubs).Include(c => c.Players).FirstOrDefault(p => p.ClubId == clubId);
+			if (club != null && club.Status == true)
 			{
-				var hasRound19Matches = _context.Matches.Any(m => m.Round == 19 && (m.Home == clubId || m.Away == clubId));
-				var hasRound19MatchesWithTrueStatus = _context.Matches.Any(m => m.Round == 19 && (m.Home == clubId || m.Away == clubId) && m.Status == true);
-
-				if (hasRound19Matches && hasRound19MatchesWithTrueStatus)
-				{
-					return;
-				}
+				_context.FavoriteClubs.RemoveRange(club.FavoriteClubs);
 				_context.Players.RemoveRange(club.Players);
 				_context.Clubs.Remove(club);
+				_context.SaveChanges();
+			}
+		}
+
+		public void ToggleClubStatus(int clubId)
+		{
+			var club = _context.Clubs.FirstOrDefault(p => p.ClubId == clubId);
+			if (club != null)
+			{
+				club.Status = !club.Status;
 				_context.SaveChanges();
 			}
 		}

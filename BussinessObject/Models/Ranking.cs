@@ -21,5 +21,7 @@ public partial class Ranking
 
     public int? MatchPlayed { get; set; }
 
+    public bool? Status { get; set; }
+
     public virtual Club Club { get; set; } = null!;
 }

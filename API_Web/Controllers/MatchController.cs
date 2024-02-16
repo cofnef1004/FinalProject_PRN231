@@ -65,6 +65,13 @@ namespace API_Web.Controllers
 			return _matchRepository.GetMatchById(id);
 		}
 
+		[HttpGet("Club/{clubId}")]
+		public IActionResult GetMatchByClub(int clubId)
+		{
+			var matches = _matchRepository.GetMatchesByClub(clubId);
+			return Ok(matches);
+		}
+
 		[HttpGet("match/{round}")]
 		public IActionResult GetmatchsByRound(int round)
 		{

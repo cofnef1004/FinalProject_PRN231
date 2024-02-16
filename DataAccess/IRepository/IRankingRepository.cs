@@ -1,4 +1,5 @@
-﻿using DataAccess.DTO;
+﻿using BussinessObject.Models;
+using DataAccess.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,11 @@ namespace Repository.IRepository
 	public interface IRankingRepository
 	{
 		List<RankingDTO> GetRankings();
+
+		RankingDTO GetDetail(int clubId);
+
 		void UpdateRankings();
+
+		void AddClubToRanking(ClubDTO club);
 	}
 }

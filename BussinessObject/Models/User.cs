@@ -13,7 +13,9 @@ public partial class User
 
     public int RoleId { get; set; }
 
-    public virtual ICollection<Club> Clubs { get; set; } = new List<Club>();
+    public long? Phone { get; set; }
+
+    public virtual ICollection<FavoriteClub> FavoriteClubs { get; set; } = new List<FavoriteClub>();
 
     public virtual Role Role { get; set; } = null!;
 }

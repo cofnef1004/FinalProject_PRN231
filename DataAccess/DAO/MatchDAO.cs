@@ -23,6 +23,12 @@ namespace DataAccess.DAO
 				.Include(p => p.HomeNavigation).ToList();
 		}
 
+		public List<Match> GetMatchesByClub(int clubId)
+		{
+			return _context.Matches.Include(p => p.AwayNavigation)
+				.Include(p => p.HomeNavigation).Where(p => p.Home == clubId || p.Away == clubId).ToList();
+		}
+
 		public List<Match> GetRandomMatches()
 		{
 			return _context.Matches.Include(p => p.AwayNavigation)
@@ -92,6 +98,79 @@ namespace DataAccess.DAO
 
 		public void GenerateMatchesForRound(int round)
 		{
+			var existingRound = _context.Matches
+	.Where(m => m.Round == round)
+	.Count() >= 10;
+			if (existingRound)
+			{
+				return;
+			}
+			var previousRoundExists = _context.Matches.Any(m => m.Round == round - 1);
+
+			if (!previousRoundExists)
+			{
+				return;
+			}
+
+			var previousRoundsComplete = _context.Matches
+				.Where(m => m.Round == round - 1)
+				.All(m => m.Status == true);
+
+			if (!previousRoundsComplete)
+			{
+				return;
+			}
+
+			var teams = _context.Clubs.ToList();
+			var playedTeams = new List<int>();
+			var previousMatches = _context.Matches.Where(m => m.Round == round).ToList();
+
+			if (previousMatches.Count < 10)
+			{
+				_context.Matches.RemoveRange(previousMatches);
+				_context.SaveChanges();
+			}
+
+			var randomTeams = teams.OrderBy(t => Guid.NewGuid()).ToList();
+
+			foreach (var homeTeam in randomTeams)
+			{
+				if (playedTeams.Contains(homeTeam.ClubId))
+				{
+					continue;
+				}
+				var awayTeams = teams.Where(t =>
+					t.ClubId != homeTeam.ClubId &&
+					!playedTeams.Contains(t.ClubId) &&
+					!previousMatches.Any(m =>
+						(m.Home == homeTeam.ClubId && m.Away == t.ClubId) ||
+						(m.Home == t.ClubId && m.Away == homeTeam.ClubId)
+					)
+				);
+				foreach (var awayTeam in awayTeams)
+				{
+					var match = new Match()
+					{
+						Round = round,
+						Home = homeTeam.ClubId,
+						Away = awayTeam.ClubId,
+						Date = DateTime.Now,
+						StadiumId = homeTeam.StadiumId,
+						RefId = GetRandomRefereeForRound(round),
+						Result = "-",
+						Status = false
+					};
+					_context.Matches.Add(match);
+					playedTeams.Add(homeTeam.ClubId);
+					playedTeams.Add(awayTeam.ClubId);
+					break;
+				}
+			}
+			_context.SaveChanges();
+		}
+
+		/*public void GenerateMatchesForRound(int round)
+		{
 			var existingRound = _context.Matches.Any(m => m.Round == round);
 			if (existingRound)
 			{
@@ -99,8 +178,16 @@ namespace DataAccess.DAO
 				return;
 			}
 
+			var previousRoundExists = _context.Matches.Any(m => m.Round == round - 1);
+
+			if (!previousRoundExists)
+			{
+				Console.WriteLine($"Previous round does not exist. Generating matches for round {round} is not allowed.");
+				return;
+			}
+
 			var previousRoundsComplete = _context.Matches
-				.Where(m => m.Round < round)
+				.Where(m => m.Round == round - 1)
 				.All(m => m.Status == true);
 
 			if (!previousRoundsComplete)
@@ -148,7 +235,7 @@ namespace DataAccess.DAO
 				}
 			}
 			_context.SaveChanges();
-		}
+		}*/
 
 		public int GetRandomRefereeForRound(int round)
 		{

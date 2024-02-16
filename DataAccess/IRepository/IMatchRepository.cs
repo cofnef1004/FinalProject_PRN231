@@ -12,6 +12,8 @@ namespace Repository.IRepository
 		List<MatchDTO> GetMatches();
 		List<MatchDTO> GetMatchesByRound(int round);
 
+		List<MatchDTO> GetMatchesByClub(int clubId);
+
 		List<MatchDTO> GetRandomMatches();
 
 		List<MatchDTO> GetMatchNotDetail();

@@ -22,6 +22,7 @@ namespace DataAccess.DTO
 		public int CityId { get; set; }
 
 		public string? Logo { get; set; }
+		public bool? Status { get; set; }
 
 		public virtual CityDTO? City { get; set; } = null!;
 

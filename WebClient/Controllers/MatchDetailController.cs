@@ -1,6 +1,7 @@
 ﻿using BussinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -64,6 +65,11 @@ namespace WebClient.Controllers
 
 		public async Task<IActionResult> Index(int matchId)
 		{
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			TempData["Role"] = role;
 			if (matchId == 0)
 			{
 				ViewBag.Message = "Invalid match ID.";
@@ -81,7 +87,6 @@ namespace WebClient.Controllers
 				PropertyNameCaseInsensitive = true,
 			};
 			MatchDetail matchDetail = JsonSerializer.Deserialize<MatchDetail>(data, options);
-
 			if (matchDetail == null)
 			{
 				ViewBag.Message = "Match detail not found.";
@@ -92,56 +97,85 @@ namespace WebClient.Controllers
 
         public IActionResult Add()
         {
-            var matches = GetMatches().Result;
-            ViewData["Matches"] = matches.Select(m => new SelectListItem { Value = m.MatchId.ToString(), Text = $"{m.HomeNavigation.Name} - {m.AwayNavigation.Name} - Round : {m.Round}" });
-            return View();
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
+			{
+				var matches = GetMatches().Result;
+				ViewData["Matches"] = matches.Select(m => new SelectListItem { Value = m.MatchId.ToString(), Text = $"{m.HomeNavigation.Name} - {m.AwayNavigation.Name} - Round : {m.Round}" });
+				return View();
+			}
+            return RedirectToAction("Index", "Denied");
         }
 
         [HttpPost]
 		public async Task<IActionResult> Add(MatchDetail matchDetail)
 		{
-			HttpResponseMessage response = await client.PostAsJsonAsync(MatchDetailApiUrl, matchDetail);
-
-			if (response.IsSuccessStatusCode)
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
 			{
-				return RedirectToAction("Index");
+				HttpResponseMessage response = await client.PostAsJsonAsync(MatchDetailApiUrl, matchDetail);
+				if (response.IsSuccessStatusCode)
+				{
+					return RedirectToAction("Index");
+				}
+				else
+				{
+					ViewBag.Message = "Failed to add MatchDetail.";
+					return View();
+				}
 			}
-			else
-			{
-				ViewBag.Message = "Failed to add MatchDetail.";
-				return View();
-			}
-		}
+            return RedirectToAction("Index", "Denied");
+        }
 
 		public async Task<IActionResult> Edit(int id)
         {
-            HttpResponseMessage Response = await client.GetAsync($"{MatchDetailApiUrl}/MatchDetail/{id}");
-            if (Response.IsSuccessStatusCode)
-            {
-                string StrData = await Response.Content.ReadAsStringAsync();
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                };
-                MatchDetail matchDetail = JsonSerializer.Deserialize<MatchDetail>(StrData, options);
-                return View(matchDetail);
-            }
-            return NotFound();
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
+			{
+				HttpResponseMessage Response = await client.GetAsync($"{MatchDetailApiUrl}/MatchDetail/{id}");
+				if (Response.IsSuccessStatusCode)
+				{
+					string StrData = await Response.Content.ReadAsStringAsync();
+					var options = new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true,
+					};
+					MatchDetail matchDetail = JsonSerializer.Deserialize<MatchDetail>(StrData, options);
+					return View(matchDetail);
+				}
+			}
+            return RedirectToAction("Index", "Denied");
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(int id, MatchDetail matchDetail)
         {
-            HttpResponseMessage response = await client.PutAsJsonAsync($"{MatchDetailApiUrl}/{id}", matchDetail);
+			string token = HttpContext.Session.GetString("token");
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var jwtToken = tokenHandler.ReadJwtToken(token);
+			string role = jwtToken.Claims.FirstOrDefault(x => x.Type == "role")?.Value;
+			if (role.Equals("Admin"))
+			{
+				HttpResponseMessage response = await client.PutAsJsonAsync($"{MatchDetailApiUrl}/{id}", matchDetail);
+				if (response.IsSuccessStatusCode)
+				{
+					ViewBag.SuccessMessage = "Match detail updated successfully.";
+					return View(matchDetail);
+				}
 
-            if (response.IsSuccessStatusCode)
-            {
-                ViewBag.SuccessMessage = "Match detail updated successfully.";
-                return View(matchDetail);
-            }
-
-            ViewBag.ErrorMessage = "Failed to update match detail.";
-            return View(matchDetail);
+				ViewBag.ErrorMessage = "Failed to update match detail.";
+				return View(matchDetail);
+			}
+            return RedirectToAction("Index", "Denied");
         }
     }
 }

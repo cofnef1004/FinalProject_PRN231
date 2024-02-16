@@ -1,0 +1,85 @@
+﻿@model List<BussinessObject.Models.Ranking>
+
+@{
+	Layout = "_demo";
+}
+<link rel="stylesheet" type="text/css" href="~/css/Rank/index.css">
+<style>
+	.club-logo {
+		width: 40px;
+		height: 40px;
+	}
+
+	.Wrap {
+		height: 100vh;
+		overflow-y: scroll;
+	}
+
+		.Wrap::-webkit-scrollbar {
+			display: none;
+		}
+</style>
+<form method="post" action="/Ranking/UpdateAllRankings">
+    <div class="Wrap">
+        <div class="container">
+            <div class="grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Club</th>
+                                        <th>MP</th>
+                                        <th>W</th>
+                                        <th>D</th>
+                                        <th>L</th>
+                                        <th>Dif</th>
+                                        <th>Point</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int i = 1;
+                                    }
+                                    @foreach (var ranking in Model)
+                                    {
+                                        <tr>
+                                            <td>@i</td>
+                                            <td>
+                                                <img src="@ranking.Club.Logo" alt="Avatar" class="club-logo">
+                                                <span class="ml-2 font-medium">@ranking.Club.Name</span>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="newRankings[@ranking.ClubId].MatchPlayed" value="@ranking.MatchPlayed" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="newRankings[@ranking.ClubId].Win" value="@ranking.Win" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="newRankings[@ranking.ClubId].Draw" value="@ranking.Draw" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="newRankings[@ranking.ClubId].Loose" value="@ranking.Loose" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="newRankings[@ranking.ClubId].Difference" value="@ranking.Difference" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="newRankings[@ranking.ClubId].Point" value="@ranking.Point" />
+                                            </td>
+                                        </tr>
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit">Update</button>
+</form>

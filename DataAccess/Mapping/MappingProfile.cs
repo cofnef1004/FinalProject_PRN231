@@ -29,6 +29,7 @@ namespace DataAccess.Mapping
             CreateMap<PlayerMatchRegistration, PlayerMatchRegistrationDTO>().ReverseMap();
 			CreateMap<MatchDetail, MatchDetailDTO>().ReverseMap();
             CreateMap<Goal, GoalDTO>().ReverseMap();
-        }
+			CreateMap<FavoriteClub, FavoDto>().ReverseMap();
+		}
 	}
 }

@@ -22,6 +22,24 @@ namespace Repository.Repository
 			_context = context;
 			this.mapper = mapper;
 		}
+
+		public void AddClubToRanking(ClubDTO club)
+		{
+			rankingDAO = new RankingDAO(_context);
+
+			Club clubToAdd = mapper.Map<Club>(club);
+
+			rankingDAO.AddClubToRanking(clubToAdd);
+			_context.SaveChanges();
+		}
+
+		public RankingDTO GetDetail(int clubId)
+		{
+			rankingDAO = new RankingDAO(_context);
+			RankingDTO ranking = mapper.Map<RankingDTO>(rankingDAO.GetByClub(clubId));
+			return ranking;
+		}
+
 		public List<RankingDTO> GetRankings()
 		{
 			rankingDAO = new RankingDAO(_context);

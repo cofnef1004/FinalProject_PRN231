@@ -24,9 +24,7 @@ namespace DataAccess.DAO
 								.Include(p => p.Club)
 				.ThenInclude(c => c.Stadium)
                                 .Include(p => p.Club)
-                .ThenInclude(c => c.City)
-                                .Include(p => p.Club)
-                .ThenInclude(c => c.User).ThenInclude(c => c.Role).ToList();
+                .ThenInclude(c => c.City).ToList();
 		}
 
 		public List<Player> GetPlayersByClubId(int clubId) 
@@ -36,9 +34,7 @@ namespace DataAccess.DAO
                                 .Include(p => p.Club)
                 .ThenInclude(c => c.Stadium)
                                 .Include(p => p.Club)
-                .ThenInclude(c => c.City)
-                                .Include(p => p.Club)
-                .ThenInclude(c => c.User).ThenInclude(c => c.Role).Where(p => p.ClubId == clubId).ToList();
+                .ThenInclude(c => c.City).Where(p => p.ClubId == clubId).ToList();
         }
 
 		public List<Player> GetPlayersByClubIdNotRegis(int clubId)
@@ -48,9 +44,7 @@ namespace DataAccess.DAO
 								.Include(p => p.Club)
 				.ThenInclude(c => c.Stadium)
 								.Include(p => p.Club)
-				.ThenInclude(c => c.City)
-								.Include(p => p.Club)
-				.ThenInclude(c => c.User).ThenInclude(c => c.Role).Where(p => p.ClubId == clubId && p.PlayerMatchRegistrations.Count == 0).ToList();
+				.ThenInclude(c => c.City).Where(p => p.ClubId == clubId && p.PlayerMatchRegistrations.Count == 0).ToList();
 		}
 
 		public Player GetPlayersById(int id)
@@ -60,15 +54,22 @@ namespace DataAccess.DAO
 								.Include(p => p.Club)
 				.ThenInclude(c => c.Stadium)
 								.Include(p => p.Club)
-				.ThenInclude(c => c.City)
-								.Include(p => p.Club)
-				.ThenInclude(c => c.User).ThenInclude(c => c.Role).FirstOrDefault(p => p.PlayerId == id);
+				.ThenInclude(c => c.City).FirstOrDefault(p => p.PlayerId == id);
 		}
 
 		public void CreatePlayer(Player p)
 		{
-			_context.Players.Add(p);
-			_context.SaveChanges();
+			bool isNumberExists = _context.Players.Any(x => x.Number == p.Number);
+
+			if (isNumberExists)
+			{
+				return;
+			}
+			else
+			{
+				_context.Players.Add(p);
+				_context.SaveChanges();
+			}
 		}
 
 		public void Update(Player player)

@@ -35,5 +35,25 @@ namespace Repository.Repository
 			userDAO = new UserDAO(_context);
 			return mapper.Map<UserDTO>(UserDAO.CheckUserLogin(request));
 		}
+
+		public UserDTO? Register(RegisRequest request)
+		{
+			userDAO = new UserDAO(_context);
+			return mapper.Map<UserDTO>(UserDAO.Register(request));
+		}
+
+		public void Update(UserDTO userDTO)
+		{
+			userDAO = new UserDAO(_context);
+			User p = mapper.Map<User>(userDTO);
+			userDAO.Edit(p);
+		}
+
+		public UserDTO? GetUserById(int id)
+		{
+			userDAO = new UserDAO(_context);
+			UserDTO user = mapper.Map<UserDTO>(userDAO.GetUserById(id));
+			return user;
+		}
 	}
 }

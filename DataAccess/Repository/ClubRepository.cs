@@ -2,6 +2,7 @@
 using BussinessObject.Models;
 using DataAccess.DAO;
 using DataAccess.DTO;
+using Microsoft.AspNetCore.Http;
 using Repository.IRepository;
 using System;
 using System.Collections.Generic;
@@ -43,18 +44,17 @@ namespace Repository.Repository
 			return clubDTO;
 		}
 
-		public List<ClubDTO> GetClubByUserId(int userId)
-		{
-			clubDAO = new ClubDAO(_context);
-            List<ClubDTO> clubDTO = mapper.Map<List<ClubDTO>>(clubDAO.GetClubByUserId(userId));
-			return clubDTO;
-		}
-
 		public List<ClubDTO> GetClubs()
 		{
 			clubDAO = new ClubDAO(_context);
 			List<ClubDTO> clubDTOs= mapper.Map<List<ClubDTO>>(clubDAO.GetAll());
 			return clubDTOs;
+		}
+
+		public void ToggleClubStatus(int clubId)
+		{
+			clubDAO = new ClubDAO(_context);
+			clubDAO.ToggleClubStatus(clubId);
 		}
 
 		public void Update(ClubDTO clubDTO)
@@ -63,5 +63,11 @@ namespace Repository.Repository
 			Club p = mapper.Map<Club>(clubDTO);
 			clubDAO.UpdateClub(p);
 		}
+		/*		public void Update(ClubDTO clubDTO, IFormFile logoFile)
+				{
+					clubDAO = new ClubDAO(_context);
+					Club p = mapper.Map<Club>(clubDTO);
+					clubDAO.UpdateClub(p, logoFile);
+				}*/
 	}
 }

@@ -1,118 +1,145 @@
-﻿@model BussinessObject.Models.MatchDetail
+﻿@{
+	@model BussinessObject.Models.MatchDetail
+	Layout = "_demo";
+	<link rel="stylesheet" href="~/vendors/feather/feather.css">
+	<link rel="stylesheet" href="~/vendors/mdi/css/materialdesignicons.min.css">
+	<link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css">
+	<link rel="stylesheet" href="~/vendors/typicons/typicons.css">
+	<link rel="stylesheet" href="~/vendors/simple-line-icons/css/simple-line-icons.css">
+	<link rel="stylesheet" href="~/vendors/css/vendor.bundle.base.css">
+	<!-- endinject -->
+	<!-- Plugin css for this page -->
+	<link rel="stylesheet" href="~/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+	<link rel="stylesheet" href="~/js/select.dataTables.min.css">
+	<!-- End plugin css for this page -->
+	<!-- inject:css -->
+	<link rel="stylesheet" href="~/css/vertical-layout-light/style.css">
+	<!-- endinject -->
+	<link rel="shortcut icon" href="images/favicon.png" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+}
+
 
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
-    <div class="alert alert-danger">@ViewBag.Message</div>
+	<div class="alert alert-danger">@ViewBag.Message</div>
 }
+<div class="grid-margin stretch-card">
+	<div class="card">
+		<div class="card-body">
+			<div class="table-responsive">
 
-<form method="post" action="/MatchDetail/Add">
-    <div class="form-group">
-        <label>Match:</label>
-        @Html.DropDownListFor(model => model.MatchId, (IEnumerable<SelectListItem>)ViewData["Matches"], "Select a match", new { @class = "form-control" })
-    </div>
+				<form method="post" action="/MatchDetail/Add">
+					<div class="form-group">
+						<label>Match:</label>
+						@Html.DropDownListFor(model => model.MatchId, (IEnumerable<SelectListItem>)ViewData["Matches"], "Select a match", new { @class = "form-control" })
+					</div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <h3>Home</h3>
+					<div class="row">
+						<div class="col-md-6">
+							<h3>Home</h3>
 
-            <div class="form-group">
-                <label>Possession:</label>
-                <input type="number" class="form-control" asp-for="HomePossesion" required />
-            </div>
+							<div class="form-group">
+								<label>Possession:</label>
+								<input type="number" class="form-control" asp-for="HomePossesion" required />
+							</div>
 
-            <div class="form-group">
-                <label>Shots:</label>
-                <input type="number" class="form-control" asp-for="HomeShot" required />
-            </div>
+							<div class="form-group">
+								<label>Shots:</label>
+								<input type="number" class="form-control" asp-for="HomeShot" required />
+							</div>
 
-            <div class="form-group">
-                <label>Shots on Target:</label>
-                <input type="number" class="form-control" asp-for="HomeShotOnTarget" required/>
-            </div>
+							<div class="form-group">
+								<label>Shots on Target:</label>
+								<input type="number" class="form-control" asp-for="HomeShotOnTarget" required />
+							</div>
 
-            <div class="form-group">
-                <label>Corners:</label>
-                <input type="number" class="form-control" asp-for="HomeConers" required/>
-            </div>
+							<div class="form-group">
+								<label>Corners:</label>
+								<input type="number" class="form-control" asp-for="HomeConers" required />
+							</div>
 
-            <div class="form-group">
-                <label>Yellow Cards:</label>
-                <input type="number" class="form-control" asp-for="HomeYcard" required/>
-            </div>
+							<div class="form-group">
+								<label>Yellow Cards:</label>
+								<input type="number" class="form-control" asp-for="HomeYcard" required />
+							</div>
 
-            <div class="form-group">
-                <label>Red Cards:</label>
-                <input type="number" class="form-control" asp-for="HomeRcard" required/>
-            </div>
+							<div class="form-group">
+								<label>Red Cards:</label>
+								<input type="number" class="form-control" asp-for="HomeRcard" required />
+							</div>
 
-            <div class="form-group">
-                <label>Passes:</label>
-                <input type="number" class="form-control" asp-for="HomePass" required/>
-            </div>
-        </div>
+							<div class="form-group">
+								<label>Passes:</label>
+								<input type="number" class="form-control" asp-for="HomePass" required />
+							</div>
+						</div>
 
-        <div class="col-md-6">
-            <h3>Away</h3>
+						<div class="col-md-6">
+							<h3>Away</h3>
 
-            <div class="form-group">
-                <label>Possession:</label>
-                <input type="number" class="form-control" asp-for="AwayPossesion" required/>
-            </div>
+							<div class="form-group">
+								<label>Possession:</label>
+								<input type="number" class="form-control" asp-for="AwayPossesion" required />
+							</div>
 
-            <div class="form-group">
-                <label>Shots:</label>
-                <input type="number" class="form-control" asp-for="AwayShot" required/>
-            </div>
+							<div class="form-group">
+								<label>Shots:</label>
+								<input type="number" class="form-control" asp-for="AwayShot" required />
+							</div>
 
-            <div class="form-group">
-                <label>Shots on Target:</label>
-                <input type="number" class="form-control" asp-for="AwayShotOnTarget" required/>
-            </div>
+							<div class="form-group">
+								<label>Shots on Target:</label>
+								<input type="number" class="form-control" asp-for="AwayShotOnTarget" required />
+							</div>
 
-            <div class="form-group">
-                <label>Corners:</label>
-                <input type="number" class="form-control" asp-for="AwayConers" required/>
-            </div>
+							<div class="form-group">
+								<label>Corners:</label>
+								<input type="number" class="form-control" asp-for="AwayConers" required />
+							</div>
 
-            <div class="form-group">
-                <label>Yellow Cards:</label>
-                <input type="number" class="form-control" asp-for="AwayYcard" required/>
-            </div>
+							<div class="form-group">
+								<label>Yellow Cards:</label>
+								<input type="number" class="form-control" asp-for="AwayYcard" required />
+							</div>
 
-            <div class="form-group">
-                <label>Red Cards:</label>
-                <input type="number" class="form-control" asp-for="AwayRcard" required/>
-            </div>
+							<div class="form-group">
+								<label>Red Cards:</label>
+								<input type="number" class="form-control" asp-for="AwayRcard" required />
+							</div>
 
-            <div class="form-group">
-                <label>Passes:</label>
-                <input type="number" class="form-control" asp-for="AwayPass" required/>
-            </div>
-        </div>
-    </div>
+							<div class="form-group">
+								<label>Passes:</label>
+								<input type="number" class="form-control" asp-for="AwayPass" required />
+							</div>
+						</div>
+					</div>
 
-    <div style="margin-top:10px">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a href="/match" class="btn btn-secondary">Back</a>
-    </div>
-</form>
+					<div style="margin-top:10px">
+						<button type="submit" class="btn btn-primary">Save</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 <script>
-    function validateForm() {
-        var homeShot = parseInt(document.getElementById("HomeShot").value);
-        var homeShotOnTarget = parseInt(document.getElementById("HomeShotOnTarget").value);
-        var awayShot = parseInt(document.getElementById("AwayShot").value);
-        var awayShotOnTarget = parseInt(document.getElementById("AwayShotOnTarget").value);
+	function validateForm() {
+		var homeShot = parseInt(document.getElementById("HomeShot").value);
+		var homeShotOnTarget = parseInt(document.getElementById("HomeShotOnTarget").value);
+		var awayShot = parseInt(document.getElementById("AwayShot").value);
+		var awayShotOnTarget = parseInt(document.getElementById("AwayShotOnTarget").value);
 
-        if (homeShotOnTarget > homeShot) {
-            alert("Số lượng Shots on Target không được lớn hơn số lượng Shots (Home).");
-            return false;
-        }
+		if (homeShotOnTarget > homeShot) {
+			alert("Số lượng Shots on Target không được lớn hơn số lượng Shots (Home).");
+			return false;
+		}
 
-        if (awayShotOnTarget > awayShot) {
-            alert("Số lượng Shots on Target không được lớn hơn số lượng Shots (Away).");
-            return false;
-        }
+		if (awayShotOnTarget > awayShot) {
+			alert("Số lượng Shots on Target không được lớn hơn số lượng Shots (Away).");
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 </script>

@@ -1,0 +1,143 @@
+﻿@model BussinessObject.Models.Ranking
+
+@{
+	ViewData["Title"] = "Club Detail";
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	Layout = "_demo";
+	<link rel="stylesheet" href="~/vendors/feather/feather.css">
+	<link rel="stylesheet" href="~/vendors/mdi/css/materialdesignicons.min.css">
+	<link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css">
+	<link rel="stylesheet" href="~/vendors/typicons/typicons.css">
+	<link rel="stylesheet" href="~/vendors/simple-line-icons/css/simple-line-icons.css">
+	<link rel="stylesheet" href="~/vendors/css/vendor.bundle.base.css">
+	<!-- endinject -->
+	<!-- Plugin css for this page -->
+	<link rel="stylesheet" href="~/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+	<link rel="stylesheet" href="~/js/select.dataTables.min.css">
+	<!-- End plugin css for this page -->
+	<!-- inject:css -->
+	<link rel="stylesheet" href="~/css/vertical-layout-light/style.css">
+	<!-- endinject -->
+	<link rel="shortcut icon" href="images/favicon.png" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+}
+<style>
+	.club-logo {
+		width: 100px;
+		height: 100px;
+	}
+
+	.Wrap {
+		height: 100vh;
+		overflow-y: scroll;
+	}
+
+		.Wrap::-webkit-scrollbar {
+			display: none;
+		}
+
+</style>
+<div style="margin-top:100px" class="container">
+	<div class="row">
+		<div class="col-lg-6 grid-margin stretch-card">
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Club</th>
+									<th>Round</th>
+									<th>Win</th>
+									<th>Draw</th>
+									<th>Loss</th>
+									<th>Points</th>
+									<th>Played</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><img src="@Model.Club.Logo" alt="Avatar" class="club-logo"></td>
+									<td>@Model.Round</td>
+									<td>
+										@Model.Win
+										@if (Model.MatchPlayed > 0)
+										{
+											double winPercentage = (double)Model.Win / (double)Model.MatchPlayed * 100;
+											<span>(@winPercentage.ToString("0.##")%)</span>
+										}
+									</td>
+									<td>
+										@Model.Draw
+										@if (Model.MatchPlayed > 0)
+										{
+											double drawPercentage = (double)Model.Draw / (double)Model.MatchPlayed * 100;
+											<span>(@drawPercentage.ToString("0.##")%)</span>
+										}
+									</td>
+									<td>
+										@Model.Loose
+										@if (Model.MatchPlayed > 0)
+										{
+											double lossPercentage = (double)Model.Loose / (double)Model.MatchPlayed * 100;
+											<span>(@lossPercentage.ToString("0.##")%)</span>
+										}
+									</td>
+									<td>@Model.Point</td>
+									<td>@Model.MatchPlayed</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6 grid-margin grid-margin-lg-0 stretch-card">
+			<div class="card">
+				<div class="chart-container" style="width: 270px; height: 270px;">
+					<canvas id="pieChart"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div style="margin-top:10px">
+	<a href="/FavoClub" class="btn btn-secondary">Back</a>
+</div>
+<script>
+	var win = @Model.Win;
+	var draw = @Model.Draw;
+	var loss = @Model.Loose;
+	var totalMatches = @Model.MatchPlayed;
+
+	var ctx = document.getElementById('pieChart').getContext('2d');
+	var pieChart = new Chart(ctx, {
+		type: 'pie',
+		data: {
+			labels: ['Win', 'Draw', 'Loss'],
+			datasets: [{
+				data: [win, draw, loss],
+				backgroundColor: ['#36a2eb', '#ffce56', '#ff6384'],
+				borderWidth: 0
+			}]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			tooltips: {
+				callbacks: {
+					label: function (tooltipItem, data) {
+						var dataset = data.datasets[tooltipItem.datasetIndex];
+						var total = dataset.data.reduce(function (previousValue, currentValue, currentIndex, array) {
+							return previousValue + currentValue;
+						});
+						var currentValue = dataset.data[tooltipItem.index];
+						var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
+						return percentage + '%';
+					}
+				}
+			}
+		}
+	});
+</script>
+

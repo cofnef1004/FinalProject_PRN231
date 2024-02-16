@@ -25,12 +25,40 @@ namespace DataAccess.DAO
 			  .Include(p => p.Club)
 			  .ThenInclude(p => p.Stadium)
 			  .Include(p => p.Club)
-			  .ThenInclude(p => p.User)
-			  .ThenInclude(p => p.Role)
 			  .OrderByDescending(r => r.Point)
 			  .ThenByDescending(r => r.Difference)
 			  .ThenBy(r => r.Club.Name)
 			  .ToList();
+		}
+
+		public Ranking GetByClub(int clubId)
+		{
+			return _context.Rankings
+			  .Include(p => p.Club)
+			  .ThenInclude(p => p.City)
+			  .Include(p => p.Club)
+			  .ThenInclude(p => p.Stadium)
+			  .Include(p => p.Club)
+			  .OrderByDescending(r => r.Point)
+			  .ThenByDescending(r => r.Difference)
+			  .ThenBy(r => r.Club.Name).FirstOrDefault(p => p.ClubId == clubId);
+		}
+
+		public void AddClubToRanking(Club club)
+		{
+			Ranking ranking = new Ranking
+			{
+				ClubId = club.ClubId,
+				Point = 0,
+				Difference = 0,
+				MatchPlayed = 0,
+				Win = 0,
+				Draw = 0,
+				Loose = 0
+			};
+
+			_context.Rankings.Add(ranking);
+			_context.SaveChanges();
 		}
 
 		public void UpdateRankings()
